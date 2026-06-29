@@ -1,0 +1,149 @@
+    /* ─── Design tokens ─────────────────────────────────────────────────────── */
+    :root {
+      --glass-bg:      rgba(28, 28, 30, 0.70); /* iOS dark frosted surface     */
+      --glass-border:  rgba(255, 255, 255, 0.12); /* subtle light rim           */
+      --glass-blur:    blur(20px) saturate(1.8); /* frosted glass effect        */
+      --text-primary:  #ffffff;
+      --text-muted:    rgba(255, 255, 255, 0.50);
+      --accent:        #0a84ff;                /* iOS system blue               */
+      --success:       #30d158;                /* iOS system green (live dot)   */
+      --radius-pill:   14px;                   /* button corner radius          */
+      --map-bg:        #1a1a1a;                /* shown while tiles load        */
+    }
+
+    /* ─── Reset ─────────────────────────────────────────────────────────────── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #000; }
+
+    /* ─── Map fills the whole viewport ──────────────────────────────────────── */
+    #map {
+      height: 100vh;
+      width: 100%;
+      background-color: var(--map-bg);
+    }
+
+    /* ─── Hide Leaflet's default zoom + attribution widgets ─────────────────── */
+    .leaflet-control-zoom,
+    .leaflet-control-attribution { display: none !important; }
+
+    /* ─── Bottom control bar (centered, floating) ───────────────────────────── */
+    #controls {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* ─── Shared frosted-glass surface used by all buttons ──────────────────── */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 0.5px solid var(--glass-border);
+    }
+
+    /* ─── Generic icon+label button ─────────────────────────────────────────── */
+    .ctrl-btn {
+      border-radius: var(--radius-pill);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 16px;
+      letter-spacing: -0.1px;
+      white-space: nowrap;
+      transition: background 0.15s, transform 0.1s;
+      border: 0.5px solid var(--glass-border);
+    }
+    .ctrl-btn:hover  { background: rgba(60, 60, 60, 0.80); }
+    .ctrl-btn:active { transform: scale(0.96); }
+
+    /* ─── Zoom pair: two buttons sharing one pill ────────────────────────────── */
+    #zoom-wrap {
+      display: flex;
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+    }
+
+    .zoom-btn {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: 300;
+      width: 44px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .zoom-btn:hover  { background: rgba(255, 255, 255, 0.08); }
+    .zoom-btn:active { transform: scale(0.92); }
+
+    /* thin divider between + and − */
+    .zoom-divider {
+      width: 0.5px;
+      background: var(--glass-border);
+      align-self: stretch;
+    }
+
+    /* ─── Custom Pin Hover Effects ──────────────────────────────────────────── */
+    .custom-pin svg {
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy effect */
+      transform-origin: bottom center; /* Scales from the tip of the pin */
+    }
+    
+    .custom-pin:hover svg {
+      transform: scale(1.25); /* 25% larger on hover */
+      filter: drop-shadow(0px 8px 12px rgba(0,0,0,0.4)); /* Optional: Adds depth */
+    }
+    
+    /* Bring the hovered pin to the front so it doesn't scale under other pins */
+    .custom-pin:hover {
+      z-index: 1000 !important; 
+    }
+
+    /* ─── Leaflet popup: dark frosted glass, no arrow ───────────────────────── */
+    .leaflet-popup-content-wrapper {
+      background: var(--glass-bg) !important;
+      backdrop-filter: var(--glass-blur) !important;
+      -webkit-backdrop-filter: var(--glass-blur) !important;
+      border: 0.5px solid var(--glass-border) !important;
+      border-radius: var(--radius-pill) !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+
+    .leaflet-popup-content {
+      margin: 12px 16px !important;
+      font-family: inherit !important;
+    }
+
+    .leaflet-popup-content strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.2px;
+    }
+
+    .leaflet-popup-content em {
+      font-style: normal;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* hide popup arrow and close button */
+    .leaflet-popup-tip-container { display: none; }
+    .leaflet-popup-close-button  { display: none !important; }
