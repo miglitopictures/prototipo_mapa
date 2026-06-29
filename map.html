@@ -3,61 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Copacabana</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
-    />
+    <title>Rio Projects Map</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <!-- The map container — Leaflet will render into this div -->
+    
     <div id="map"></div>
 
-    <!-- Floating control bar -->
     <div id="controls">
-      <!-- Zoom +/− pair inside a single frosted pill -->
       <div id="zoom-wrap" class="glass">
         <button class="zoom-btn" id="btn-zoom-in" title="Zoom in">+</button>
         <div class="zoom-divider"></div>
         <button class="zoom-btn" id="btn-zoom-out" title="Zoom out">−</button>
       </div>
 
-      <!-- Re-center button: flies back to the default view -->
       <button class="ctrl-btn glass" id="btn-locate">
-        <svg
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3" />
           <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
         </svg>
         Re-center
       </button>
 
-      <!-- Fullscreen toggle button -->
       <button class="ctrl-btn glass" id="btn-fs">
-        <svg
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          id="fs-svg"
-        >
-          <path
-            id="fs-path"
-            d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"
-          />
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" id="fs-svg">
+          <path id="fs-path" d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3" />
         </svg>
         <span id="fs-label">Fullscreen</span>
       </button>
@@ -65,16 +36,7 @@
 
     <div id="project-panel">
       <button id="close-panel-btn" class="glass">
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -84,28 +46,22 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script>
-      /* ── 1. Map setup ─────────────────────────────────────────────────────────
-       Create the map centered on Copacabana beach.
-       zoomControl and attributionControl are disabled because we have our own UI. */
-      var CENTER = [-22.98, -43.195];
+      /* ── 1. Map setup ─────────────────────────────────────────────────────── */
+      // Shifted west slightly to perfectly frame both Copacabana and Ipanema
+      var CENTER = [-22.9830, -43.2000];
 
       var map = L.map("map", {
         zoomControl: false,
         attributionControl: false,
-      }).setView(CENTER, 15);
+      }).setView(CENTER, 14); // Zoom level 14 to see both neighborhoods
 
-      /* ── 2. Satellite tile layer (Esri World Imagery) ─────────────────────────
-       Free public endpoint — no API key required.
-       Tiles arrive as {z}/{y}/{x} (zoom / row / column). */
+      /* ── 2. Satellite tile layer ──────────────────────────────────────────── */
       L.tileLayer(
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         { maxZoom: 19 },
       ).addTo(map);
 
-      /* ── 3. Custom pin icon ───────────────────────────────────────────────────
-       L.divIcon lets us use arbitrary HTML/SVG as a marker.
-       iconAnchor places the tip of the pin exactly on the coordinate.
-       popupAnchor offsets the popup above the pin head. */
+      /* ── 3. Custom pin icon ───────────────────────────────────────────────── */
       function makePin(color) {
         var svg =
           '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">' +
@@ -120,174 +76,224 @@
 
         return L.divIcon({
           html: svg,
-          className: "custom-pin",
+          className: "custom-pin", // Required for hover scaling
           iconSize: [32, 40],
-          iconAnchor: [16, 40] /* horizontal center, bottom tip */,
-          popupAnchor: [0, -48] /* above the pin */,
+          iconAnchor: [16, 40],  
+          popupAnchor: [0, -48], 
         });
       }
-      /* ── 4. Markers & Data (JSON Approach) ────────────────────────────────────
-       Store all project data in an array of objects. 
-       This makes adding new pins incredibly easy. */
 
-      var bikeRioColor = "#ec7000"; // Itaú Orange
+      /* ── 4. Project Data & Dynamic Popups ─────────────────────────────────── */
+      var pinColor = "#ec7000"; 
 
       var projectsData = [
         {
           title: "B.Rio Paul Redfern",
           address: "Rua Paul Redfern, 41 - Ipanema",
-          coords: [-22.9836, -43.214],
-          preview: "path_to_image",
+          coords: [-22.9836, -43.2140],
+          preview: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=80",
           url: "https://en.wikipedia.org/wiki/Ipanema",
-          content: {
-            galery: "path_to_folder_with_images",
-            squareMeter: 45,
-            floorPlan: "path_to_floor_plan.png", // estou so inventando complete com algumas infos, quero focar na infraestrutura tech nao no conteudo ainda emsi.
-          }
-
+          content: { squareMeter: 450, floorPlan: "#", units: 12 }
         },
         {
           title: "B.Rio Pompeu Loureiro",
           address: "Rua Pompeu Loureiro - Copacabana",
           coords: [-22.9749, -43.1917],
+          preview: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=400&q=80",
           url: "https://en.wikipedia.org/wiki/Copacabana",
+          content: { squareMeter: 820, floorPlan: "#", units: 24 }
         },
         {
           title: "B.Rio Barão de Jaguaripe",
           address: "Rua Barão de Jaguaripe, 404 - Ipanema",
           coords: [-22.9829, -43.2084],
+          preview: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=400&q=80",
           url: "https://en.wikipedia.org/wiki/Ipanema",
+          content: { squareMeter: 310, floorPlan: "#", units: 8 }
         },
         {
           title: "B.Rio Prudente",
           address: "Rua Prudente de Moraes, 589 - Ipanema",
           coords: [-22.9845, -43.2033],
+          preview: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=400&q=80",
           url: "https://en.wikipedia.org/wiki/Ipanema",
+          content: { squareMeter: 1200, floorPlan: "#", units: 48 }
         },
         {
           title: "B.Rio Barão da Torre",
           address: "Rua Barão da Torre - Ipanema",
           coords: [-22.9838, -43.2047],
+          preview: "https://images.unsplash.com/photo-1506526611364-7da61517452e?auto=format&fit=crop&w=400&q=80",
           url: "https://en.wikipedia.org/wiki/Ipanema",
+          content: { squareMeter: 550, floorPlan: "#", units: 16 }
         },
         {
           title: "B.Rio Leopoldo Miguez",
           address: "Rua Leopoldo Miguez, 10 - Copacabana",
           coords: [-22.9757, -43.1896],
+          preview: "https://images.unsplash.com/photo-1448630360428-65456885c650?auto=format&fit=crop&w=400&q=80",
           url: "https://en.wikipedia.org/wiki/Copacabana",
+          content: { squareMeter: 900, floorPlan: "#", units: 32 }
         },
         {
           title: "B.Rio Tonelero",
           address: "Rua Tonelero, 61 - Copacabana",
           coords: [-22.9663, -43.1842],
+          preview: "https://images.unsplash.com/photo-1428366890462-dd4baecf492b?auto=format&fit=crop&w=400&q=80",
           url: "https://en.wikipedia.org/wiki/Copacabana",
+          content: { squareMeter: 400, floorPlan: "#", units: 10 }
         },
         {
           title: "B.Rio Arpoador",
           address: "Arpoador",
           coords: [-22.9883, -43.1913],
+          preview: "https://images.unsplash.com/photo-1522050212171-61b01dd24579?auto=format&fit=crop&w=400&q=80",
           url: "https://en.wikipedia.org/wiki/Arpoador",
+          content: { squareMeter: 1500, floorPlan: "#", units: 60 }
         },
         {
           title: "B.Rio Nascimento Silva",
           address: "Rua Nascimento Silva - Ipanema",
           coords: [-22.9835, -43.2057],
+          preview: "https://images.unsplash.com/photo-1503694978374-8a2fa686963a?auto=format&fit=crop&w=400&q=80",
           url: "https://en.wikipedia.org/wiki/Ipanema",
+          content: { squareMeter: 680, floorPlan: "#", units: 20 }
         },
       ];
 
-      // Grab our panel DOM elements
       var projectPanel = document.getElementById("project-panel");
       var projectFrame = document.getElementById("project-frame");
       var closePanelBtn = document.getElementById("close-panel-btn");
 
-      // Loop through the array and create a marker for each object
+     // Generator 1: The Initial Mini View
+      function createMiniPopup(project, marker) {
+        var container = document.createElement("div");
+        container.className = "custom-popup-view";
+        
+        container.innerHTML = `
+          <div class="popup-img-wrapper">
+            <img src="${project.preview}" alt="${project.title}">
+            <button class="popup-gallery-btn glass" title="Ver Galeria">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </button>
+          </div>
+          <div>
+            <strong>${project.title}</strong>
+            <em>${project.address}</em>
+          </div>
+          <button class="popup-action-btn">Ver detalhes</button>
+        `;
+
+        // Corrigido: adicionado o "e" no parâmetro e a paragem de propagação
+        container.querySelector('.popup-gallery-btn').addEventListener('click', function(e) {
+          L.DomEvent.stopPropagation(e); 
+          alert('Aqui abriria o modal de Galeria Fullscreen para: ' + project.title);
+        });
+
+        // Corrigido: adicionado o "e" no parâmetro e a paragem de propagação
+        container.querySelector('.popup-action-btn').addEventListener('click', function(e) {
+          L.DomEvent.stopPropagation(e); // <--- ISTO IMPEDE O POPUP DE FECHAR
+          marker.setPopupContent(createDetailedPopup(project, marker));
+        });
+
+        return container;
+      }
+
+      // Generator 2: The Technical Details View
+      function createDetailedPopup(project, marker) {
+        var container = document.createElement("div");
+        container.className = "custom-popup-view";
+        
+        container.innerHTML = `
+          <div>
+            <strong>${project.title}</strong>
+            <em>Detalhes Técnicos</em>
+          </div>
+          
+          <div class="popup-details-grid">
+            <div>
+              <span>Área Total</span>
+              <p>${project.content.squareMeter} m²</p>
+            </div>
+            <div>
+              <span>Unidades</span>
+              <p>${project.content.units}</p>
+            </div>
+            <div>
+              <span>Planta Baixa</span>
+              <p><a href="${project.content.floorPlan}" target="_blank" style="color:var(--accent);">Download PDF</a></p>
+            </div>
+          </div>
+
+          <button class="popup-action-btn">Ver Projeto Completo</button>
+          <button class="popup-action-btn secondary">Voltar</button>
+        `;
+
+        // Corrigido: adicionado o "e" no parâmetro e a paragem de propagação
+        container.querySelector('.secondary').addEventListener('click', function(e) {
+          L.DomEvent.stopPropagation(e); // <--- ISTO IMPEDE O POPUP DE FECHAR AO VOLTAR
+          marker.setPopupContent(createMiniPopup(project, marker));
+        });
+
+        // Corrigido: adicionado o "e" no parâmetro e a paragem de propagação
+        container.querySelector('.popup-action-btn:not(.secondary)').addEventListener('click', function(e) {
+          L.DomEvent.stopPropagation(e); 
+          projectFrame.src = project.url;
+          projectPanel.classList.add("panel-open");
+          map.closePopup(); 
+        });
+
+        return container;
+      }
+
+      // Loop through data and place pins
       projectsData.forEach(function (project) {
-        L.marker(project.coords, {
-          icon: makePin(bikeRioColor),
+        var marker = L.marker(project.coords, {
+          icon: makePin(pinColor),
           title: project.title,
-        })
-          .addTo(map)
-          .bindPopup(
-            "<strong>" +
-              project.title +
-              "</strong><em>" +
-              project.address +
-              "</em>",
-          )
-          .on("click", function (e) {
-            // 1. Zoom in a little bit (ensures a minimum zoom of 16)
-            var currentZoom = map.getZoom();
-            map.flyTo(e.latlng, Math.max(currentZoom, 16), { duration: 0.6 });
+        }).addTo(map);
 
-            // 2. Load the project URL into the iframe
-            projectFrame.src = project.url;
+        // Bind the initial mini popup
+        marker.bindPopup(createMiniPopup(project, marker));
 
-            // 3. Slide the panel open
-            projectPanel.classList.add("panel-open");
-          });
+        // Smooth zoom-in on click
+        marker.on("click", function (e) {
+          var currentZoom = map.getZoom();
+          map.flyTo(e.latlng, Math.max(currentZoom, 16), { duration: 0.6 });
+        });
       });
 
-      // Handle closing the panel
+      // Handle closing the side panel
       closePanelBtn.addEventListener("click", function () {
         projectPanel.classList.remove("panel-open");
-
-        // Optional: clear the iframe source after the animation finishes (450ms)
-        // This stops background audio/video from continuing to play after closing
-        setTimeout(function () {
-          projectFrame.src = "";
-        }, 450);
+        setTimeout(function () { projectFrame.src = ""; }, 450);
       });
 
-      /* ── 5. Zoom controls ─────────────────────────────────────────────────────
-       Calling map.zoomIn() / map.zoomOut() mirrors what Leaflet's
-       built-in zoom control does internally. */
-      document
-        .getElementById("btn-zoom-in")
-        .addEventListener("click", function () {
-          map.zoomIn();
-        });
+      /* ── 5. Standard Map Controls ─────────────────────────────────────────── */
+      document.getElementById("btn-zoom-in").addEventListener("click", function () { map.zoomIn(); });
+      document.getElementById("btn-zoom-out").addEventListener("click", function () { map.zoomOut(); });
 
-      document
-        .getElementById("btn-zoom-out")
-        .addEventListener("click", function () {
-          map.zoomOut();
-        });
+      document.getElementById("btn-locate").addEventListener("click", function () {
+        map.setView(CENTER, 14); // Matches the new zoomed-out starting center
+      });
 
-      /* ── 6. Re-center button ──────────────────────────────────────────────────
-       Flies the camera back to the original CENTER coordinate and zoom level. */
-      document
-        .getElementById("btn-locate")
-        .addEventListener("click", function () {
-          map.setView(CENTER, 15);
-        });
-
-      /* ── 7. Fullscreen toggle ─────────────────────────────────────────────────
-       Uses the browser Fullscreen API (requestFullscreen / exitFullscreen).
-       After toggling, map.invalidateSize() forces Leaflet to recalculate
-       the viewport dimensions so tiles don't go blank. */
       var fsBtn = document.getElementById("btn-fs");
       var fsLabel = document.getElementById("fs-label");
       var fsPath = document.getElementById("fs-path");
 
-      var ENTER_FS =
-        "M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3";
-      var EXIT_FS =
-        "M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3";
+      var ENTER_FS = "M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3";
+      var EXIT_FS = "M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3";
 
       fsBtn.addEventListener("click", function () {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen();
-        } else {
-          document.exitFullscreen();
-        }
-        /* give the browser a moment to resize before Leaflet measures the div */
-        setTimeout(function () {
-          map.invalidateSize();
-        }, 300);
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+        setTimeout(function () { map.invalidateSize(); }, 300);
       });
 
-      /* sync icon and label when fullscreen state changes (e.g. user presses Esc) */
       document.addEventListener("fullscreenchange", function () {
         var isFs = !!document.fullscreenElement;
         fsPath.setAttribute("d", isFs ? EXIT_FS : ENTER_FS);
