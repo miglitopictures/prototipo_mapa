@@ -147,3 +147,59 @@
     /* hide popup arrow and close button */
     .leaflet-popup-tip-container { display: none; }
     .leaflet-popup-close-button  { display: none !important; }
+
+    /* ─── Sliding Project Panel ─────────────────────────────────────────────── */
+    #project-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      max-width: 450px; /* Acts as a side-panel on desktop */
+      height: 100vh;
+      background: var(--map-bg);
+      z-index: 2000;
+      transform: translateX(100%); /* Hidden off-screen to the right */
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1); /* Buttery smooth slide */
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+    }
+
+    #project-panel.panel-open {
+      transform: translateX(0); /* Slides it in */
+    }
+
+    /* Iframe takes up the whole panel */
+    #project-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #ffffff; /* Assuming your project pages have a light background */
+    }
+
+    /* Close button styling */
+    #close-panel-btn {
+      position: absolute;
+      top: 24px;
+      left: -60px; /* Hangs outside the panel on desktop */
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.1s;
+    }
+    
+    #close-panel-btn:hover { background: rgba(60, 60, 60, 0.80); }
+    #close-panel-btn:active { transform: scale(0.92); }
+
+    /* Mobile adjustments: make panel full width and move close button inside */
+    @media (max-width: 600px) {
+      #project-panel { max-width: 100%; }
+      #close-panel-btn {
+        left: 16px;
+        background: rgba(28, 28, 30, 0.90);
+      }
+    }
