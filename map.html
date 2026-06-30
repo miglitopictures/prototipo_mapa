@@ -4,12 +4,39 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rio Projects Map</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+    />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    
     <div id="map"></div>
+
+    <button id="menu-btn" class="glass" title="Menu de Projetos">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <div id="sidebar-menu" class="glass">
+      <div class="sidebar-header">
+        <h2>Projetos</h2>
+        <button id="close-menu-btn" title="Fechar menu">✕</button>
+      </div>
+      <ul id="project-list"></ul>
+    </div>
 
     <div id="controls">
       <div id="zoom-wrap" class="glass">
@@ -19,7 +46,16 @@
       </div>
 
       <button class="ctrl-btn glass" id="btn-locate">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <circle cx="12" cy="12" r="3" />
           <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
         </svg>
@@ -27,33 +63,41 @@
       </button>
 
       <button class="ctrl-btn glass" id="btn-fs">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" id="fs-svg">
-          <path id="fs-path" d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3" />
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          id="fs-svg"
+        >
+          <path
+            id="fs-path"
+            d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"
+          />
         </svg>
         <span id="fs-label">Fullscreen</span>
       </button>
     </div>
 
-    <div id="project-panel">
-      <button id="close-panel-btn" class="glass">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-      <iframe id="project-frame" src=""></iframe>
+    <div id="overlay-backdrop"></div>
+    <div id="project-overlay" class="glass">
+      <button id="close-overlay-btn" title="Fechar">✕</button>
+      <div id="overlay-dynamic-content"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script>
       /* ── 1. Map setup ─────────────────────────────────────────────────────── */
-      // Shifted west slightly to perfectly frame both Copacabana and Ipanema
-      var CENTER = [-22.9830, -43.2000];
+      var CENTER = [-22.983, -43.2];
 
       var map = L.map("map", {
         zoomControl: false,
         attributionControl: false,
-      }).setView(CENTER, 14); // Zoom level 14 to see both neighborhoods
+      }).setView(CENTER, 16);
 
       /* ── 2. Satellite tile layer ──────────────────────────────────────────── */
       L.tileLayer(
@@ -76,108 +120,110 @@
 
         return L.divIcon({
           html: svg,
-          className: "custom-pin", // Required for hover scaling
+          className: "custom-pin",
           iconSize: [32, 40],
-          iconAnchor: [16, 40],  
-          popupAnchor: [0, -48], 
+          iconAnchor: [16, 40],
+          popupAnchor: [0, -48],
         });
       }
 
       /* ── 4. Project Data & Dynamic Popups ─────────────────────────────────── */
-      var pinColor = "#ec7000"; 
+      var pinColor = "#ec7000";
 
       var projectsData = [
         {
+          id: 1,
           title: "B.Rio Paul Redfern",
           address: "Rua Paul Redfern, 41 - Ipanema",
-          coords: [-22.9836, -43.2140],
-          preview: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=80",
-          url: "https://en.wikipedia.org/wiki/Ipanema",
-          content: { squareMeter: 450, floorPlan: "#", units: 12 }
+          coords: [-22.9836, -43.214],
+          preview:
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
+          content: {
+            squareMeter: 450,
+            floorPlan: "#",
+            units: 12,
+            description:
+              "Localizado no coração de Ipanema, este projeto redefine o conceito de luxo e sofisticação.",
+          },
         },
         {
+          id: 2,
           title: "B.Rio Pompeu Loureiro",
           address: "Rua Pompeu Loureiro - Copacabana",
           coords: [-22.9749, -43.1917],
-          preview: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=400&q=80",
-          url: "https://en.wikipedia.org/wiki/Copacabana",
-          content: { squareMeter: 820, floorPlan: "#", units: 24 }
+          preview:
+            "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80",
+          content: {
+            squareMeter: 820,
+            floorPlan: "#",
+            units: 24,
+            description:
+              "Design contemporâneo a poucos passos da icónica praia de Copacabana.",
+          },
         },
         {
+          id: 3,
           title: "B.Rio Barão de Jaguaripe",
           address: "Rua Barão de Jaguaripe, 404 - Ipanema",
           coords: [-22.9829, -43.2084],
-          preview: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=400&q=80",
-          url: "https://en.wikipedia.org/wiki/Ipanema",
-          content: { squareMeter: 310, floorPlan: "#", units: 8 }
+          preview:
+            "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
+          content: {
+            squareMeter: 310,
+            floorPlan: "#",
+            units: 8,
+            description:
+              "Edifício boutique exclusivo com áreas de lazer privadas e acabamentos premium.",
+          },
         },
         {
+          id: 4,
           title: "B.Rio Prudente",
           address: "Rua Prudente de Moraes, 589 - Ipanema",
           coords: [-22.9845, -43.2033],
-          preview: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=400&q=80",
-          url: "https://en.wikipedia.org/wiki/Ipanema",
-          content: { squareMeter: 1200, floorPlan: "#", units: 48 }
+          preview:
+            "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=800&q=80",
+          content: {
+            squareMeter: 1200,
+            floorPlan: "#",
+            units: 48,
+            description:
+              "Um marco arquitetónico que combina sustentabilidade e conforto.",
+          },
         },
         {
+          id: 5,
           title: "B.Rio Barão da Torre",
           address: "Rua Barão da Torre - Ipanema",
           coords: [-22.9838, -43.2047],
-          preview: "https://images.unsplash.com/photo-1506526611364-7da61517452e?auto=format&fit=crop&w=400&q=80",
-          url: "https://en.wikipedia.org/wiki/Ipanema",
-          content: { squareMeter: 550, floorPlan: "#", units: 16 }
-        },
-        {
-          title: "B.Rio Leopoldo Miguez",
-          address: "Rua Leopoldo Miguez, 10 - Copacabana",
-          coords: [-22.9757, -43.1896],
-          preview: "https://images.unsplash.com/photo-1448630360428-65456885c650?auto=format&fit=crop&w=400&q=80",
-          url: "https://en.wikipedia.org/wiki/Copacabana",
-          content: { squareMeter: 900, floorPlan: "#", units: 32 }
-        },
-        {
-          title: "B.Rio Tonelero",
-          address: "Rua Tonelero, 61 - Copacabana",
-          coords: [-22.9663, -43.1842],
-          preview: "https://images.unsplash.com/photo-1428366890462-dd4baecf492b?auto=format&fit=crop&w=400&q=80",
-          url: "https://en.wikipedia.org/wiki/Copacabana",
-          content: { squareMeter: 400, floorPlan: "#", units: 10 }
-        },
-        {
-          title: "B.Rio Arpoador",
-          address: "Arpoador",
-          coords: [-22.9883, -43.1913],
-          preview: "https://images.unsplash.com/photo-1522050212171-61b01dd24579?auto=format&fit=crop&w=400&q=80",
-          url: "https://en.wikipedia.org/wiki/Arpoador",
-          content: { squareMeter: 1500, floorPlan: "#", units: 60 }
-        },
-        {
-          title: "B.Rio Nascimento Silva",
-          address: "Rua Nascimento Silva - Ipanema",
-          coords: [-22.9835, -43.2057],
-          preview: "https://images.unsplash.com/photo-1503694978374-8a2fa686963a?auto=format&fit=crop&w=400&q=80",
-          url: "https://en.wikipedia.org/wiki/Ipanema",
-          content: { squareMeter: 680, floorPlan: "#", units: 20 }
+          preview:
+            "https://images.unsplash.com/photo-1506526611364-7da61517452e?auto=format&fit=crop&w=800&q=80",
+          content: {
+            squareMeter: 550,
+            floorPlan: "#",
+            units: 16,
+            description:
+              "A essência do estilo de vida carioca refletida em espaços amplos e luminosos.",
+          },
         },
       ];
 
-      var projectPanel = document.getElementById("project-panel");
-      var projectFrame = document.getElementById("project-frame");
-      var closePanelBtn = document.getElementById("close-panel-btn");
+      // Dicionário global para guardar os marcadores por ID (necessário para o menu hambúrguer interagir com eles)
+      var projectMarkers = {};
 
-     // Generator 1: The Initial Mini View
+      /* ─── Popup Generators ────────────────────────────────────────────────── */
+
+      // Generator 1: The Initial Mini View
       function createMiniPopup(project, marker) {
         var container = document.createElement("div");
         container.className = "custom-popup-view";
-        
+
         container.innerHTML = `
           <div class="popup-img-wrapper">
             <img src="${project.preview}" alt="${project.title}">
             <button class="popup-gallery-btn glass" title="Ver Galeria">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                <polyline points="21 15 16 10 5 21"></polyline>
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline>
               </svg>
             </button>
           </div>
@@ -188,17 +234,20 @@
           <button class="popup-action-btn">Ver detalhes</button>
         `;
 
-        // Corrigido: adicionado o "e" no parâmetro e a paragem de propagação
-        container.querySelector('.popup-gallery-btn').addEventListener('click', function(e) {
-          L.DomEvent.stopPropagation(e); 
-          alert('Aqui abriria o modal de Galeria Fullscreen para: ' + project.title);
-        });
+        container
+          .querySelector(".popup-gallery-btn")
+          .addEventListener("click", function (e) {
+            L.DomEvent.stopPropagation(e);
+            alert("Abrir galeria para: " + project.title);
+          });
 
-        // Corrigido: adicionado o "e" no parâmetro e a paragem de propagação
-        container.querySelector('.popup-action-btn').addEventListener('click', function(e) {
-          L.DomEvent.stopPropagation(e); // <--- ISTO IMPEDE O POPUP DE FECHAR
-          marker.setPopupContent(createDetailedPopup(project, marker));
-        });
+        // Swap to Detailed View
+        container
+          .querySelector(".popup-action-btn")
+          .addEventListener("click", function (e) {
+            L.DomEvent.stopPropagation(e);
+            marker.setPopupContent(createDetailedPopup(project, marker));
+          });
 
         return container;
       }
@@ -207,7 +256,7 @@
       function createDetailedPopup(project, marker) {
         var container = document.createElement("div");
         container.className = "custom-popup-view";
-        
+
         container.innerHTML = `
           <div>
             <strong>${project.title}</strong>
@@ -215,83 +264,169 @@
           </div>
           
           <div class="popup-details-grid">
-            <div>
-              <span>Área Total</span>
-              <p>${project.content.squareMeter} m²</p>
-            </div>
-            <div>
-              <span>Unidades</span>
-              <p>${project.content.units}</p>
-            </div>
-            <div>
-              <span>Planta Baixa</span>
-              <p><a href="${project.content.floorPlan}" target="_blank" style="color:var(--accent);">Download PDF</a></p>
-            </div>
+            <div><span>Área Total</span><p>${project.content.squareMeter} m²</p></div>
+            <div><span>Unidades</span><p>${project.content.units}</p></div>
+            <div><span>Planta Baixa</span><p><a href="${project.content.floorPlan}" target="_blank" style="color:var(--accent);">PDF</a></p></div>
           </div>
 
           <button class="popup-action-btn">Ver Projeto Completo</button>
           <button class="popup-action-btn secondary">Voltar</button>
         `;
 
-        // Corrigido: adicionado o "e" no parâmetro e a paragem de propagação
-        container.querySelector('.secondary').addEventListener('click', function(e) {
-          L.DomEvent.stopPropagation(e); // <--- ISTO IMPEDE O POPUP DE FECHAR AO VOLTAR
-          marker.setPopupContent(createMiniPopup(project, marker));
-        });
+        // Back to Mini View
+        container
+          .querySelector(".secondary")
+          .addEventListener("click", function (e) {
+            L.DomEvent.stopPropagation(e);
+            marker.setPopupContent(createMiniPopup(project, marker));
+          });
 
-        // Corrigido: adicionado o "e" no parâmetro e a paragem de propagação
-        container.querySelector('.popup-action-btn:not(.secondary)').addEventListener('click', function(e) {
-          L.DomEvent.stopPropagation(e); 
-          projectFrame.src = project.url;
-          projectPanel.classList.add("panel-open");
-          map.closePopup(); 
-        });
+        // Open Native Overlay Fullscreen
+        container
+          .querySelector(".popup-action-btn:not(.secondary)")
+          .addEventListener("click", function (e) {
+            L.DomEvent.stopPropagation(e);
+            openProjectOverlay(project);
+            map.closePopup();
+          });
 
         return container;
       }
 
-      // Loop through data and place pins
+      /* ─── Initialize Markers & Sidebar Menu ───────────────────────────────── */
+      var projectListEl = document.getElementById("project-list");
+
       projectsData.forEach(function (project) {
+        // 1. Criar o Marker
         var marker = L.marker(project.coords, {
           icon: makePin(pinColor),
           title: project.title,
         }).addTo(map);
 
-        // Bind the initial mini popup
+        // Guardar no dicionário
+        projectMarkers[project.id] = marker;
+
+        // Atribuir o mini popup inicialmente
         marker.bindPopup(createMiniPopup(project, marker));
 
-        // Smooth zoom-in on click
+        // NOVA LÓGICA: Resetar o estado sempre que o popup fechar!
+        // Isto garante que o utilizador vê sempre o Mini Popup ao clicar novamente.
+        marker.on("popupclose", function () {
+          marker.setPopupContent(createMiniPopup(project, marker));
+        });
+
+        // Smooth zoom-in on marker click
         marker.on("click", function (e) {
           var currentZoom = map.getZoom();
           map.flyTo(e.latlng, Math.max(currentZoom, 16), { duration: 0.6 });
         });
+
+        // 2. Criar a entrada no Menu Hambúrguer para este projeto
+        var li = document.createElement("li");
+        li.textContent = project.title;
+        li.addEventListener("click", function () {
+          // Fechar a sidebar
+          document.getElementById("sidebar-menu").classList.remove("open");
+
+          // Viajar para o pin
+          map.flyTo(project.coords, 16, { duration: 0.6 });
+
+          // Abrir o popup do pin correspondente
+          // (Como temos o reset no 'popupclose', ele já vai abrir limpo e no estado correto)
+          marker.openPopup();
+        });
+        projectListEl.appendChild(li);
       });
 
-      // Handle closing the side panel
-      closePanelBtn.addEventListener("click", function () {
-        projectPanel.classList.remove("panel-open");
-        setTimeout(function () { projectFrame.src = ""; }, 450);
-      });
+      /* ── 5. Native Overlay & Hamburger Menu Logic ─────────────────────────── */
 
-      /* ── 5. Standard Map Controls ─────────────────────────────────────────── */
-      document.getElementById("btn-zoom-in").addEventListener("click", function () { map.zoomIn(); });
-      document.getElementById("btn-zoom-out").addEventListener("click", function () { map.zoomOut(); });
+      var sidebarMenu = document.getElementById("sidebar-menu");
+      document
+        .getElementById("menu-btn")
+        .addEventListener("click", function () {
+          sidebarMenu.classList.add("open");
+        });
+      document
+        .getElementById("close-menu-btn")
+        .addEventListener("click", function () {
+          sidebarMenu.classList.remove("open");
+        });
 
-      document.getElementById("btn-locate").addEventListener("click", function () {
-        map.setView(CENTER, 14); // Matches the new zoomed-out starting center
-      });
+      var overlayBackdrop = document.getElementById("overlay-backdrop");
+      var projectOverlay = document.getElementById("project-overlay");
+      var overlayContent = document.getElementById("overlay-dynamic-content");
+
+      // Função que constrói dinamicamente a página Overlay do projeto
+      function openProjectOverlay(project) {
+        overlayContent.innerHTML = `
+          <img class="overlay-hero-img" src="${project.preview}" alt="${project.title}">
+          <div class="overlay-body">
+            <h1>${project.title}</h1>
+            <p class="subtitle">${project.address}</p>
+            
+            <div class="overlay-stats">
+              <div><span>Área Total</span><p>${project.content.squareMeter} m²</p></div>
+              <div><span>Unidades</span><p>${project.content.units}</p></div>
+            </div>
+
+            <h3 style="margin-bottom: 12px;">Sobre o Projeto</h3>
+            <p style="color: var(--text-muted); line-height: 1.6; font-size: 16px;">
+              ${project.content.description}
+            </p>
+            
+            </div>
+        `;
+
+        // Show Overlay
+        overlayBackdrop.classList.add("visible");
+        projectOverlay.classList.add("visible");
+      }
+
+      function closeProjectOverlay() {
+        overlayBackdrop.classList.remove("visible");
+        projectOverlay.classList.remove("visible");
+      }
+
+      // Close on 'X' click OR clicking the dark backdrop outside the modal
+      document
+        .getElementById("close-overlay-btn")
+        .addEventListener("click", closeProjectOverlay);
+      overlayBackdrop.addEventListener("click", closeProjectOverlay);
+
+      /* ── 6. Standard Map Controls ─────────────────────────────────────────── */
+      document
+        .getElementById("btn-zoom-in")
+        .addEventListener("click", function () {
+          map.zoomIn();
+        });
+      document
+        .getElementById("btn-zoom-out")
+        .addEventListener("click", function () {
+          map.zoomOut();
+        });
+
+      document
+        .getElementById("btn-locate")
+        .addEventListener("click", function () {
+          map.setView(CENTER, 16);
+        });
 
       var fsBtn = document.getElementById("btn-fs");
       var fsLabel = document.getElementById("fs-label");
       var fsPath = document.getElementById("fs-path");
 
-      var ENTER_FS = "M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3";
-      var EXIT_FS = "M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3";
+      var ENTER_FS =
+        "M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3";
+      var EXIT_FS =
+        "M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3";
 
       fsBtn.addEventListener("click", function () {
-        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        if (!document.fullscreenElement)
+          document.documentElement.requestFullscreen();
         else document.exitFullscreen();
-        setTimeout(function () { map.invalidateSize(); }, 300);
+        setTimeout(function () {
+          map.invalidateSize();
+        }, 300);
       });
 
       document.addEventListener("fullscreenchange", function () {

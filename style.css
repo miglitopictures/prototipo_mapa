@@ -13,7 +13,7 @@
 
 /* ─── Reset ─────────────────────────────────────────────────────────────── */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #000; }
+html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #000; overflow: hidden; }
 
 /* ─── Map fills the whole viewport ──────────────────────────────────────── */
 #map {
@@ -38,15 +38,86 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'SF P
   align-items: center;
 }
 
-/* ─── Shared frosted-glass surface used by all buttons ──────────────────── */
+/* ─── Top Right Hamburger Menu Button ───────────────────────────────────── */
+#menu-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  z-index: 1000;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  border: 0.5px solid var(--glass-border);
+}
+#menu-btn:hover { background: rgba(60, 60, 60, 0.80); }
+#menu-btn:active { transform: scale(0.92); }
+
+/* ─── Sidebar Menu ──────────────────────────────────────────────────────── */
+#sidebar-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 350px;
+  height: 100vh;
+  z-index: 2000;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+}
+#sidebar-menu.open { transform: translateX(0); }
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 0.5px solid var(--glass-border);
+  color: var(--text-primary);
+}
+.sidebar-header h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.5px;}
+
+#close-menu-btn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+#project-list {
+  list-style: none;
+  overflow-y: auto;
+  padding: 12px 0;
+}
+#project-list li {
+  padding: 16px 24px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  border-bottom: 0.5px solid rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#project-list li:hover { background: rgba(255, 255, 255, 0.1); }
+
+/* ─── Shared frosted-glass surface ──────────────────────────────────────── */
 .glass {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border: 0.5px solid var(--glass-border);
 }
 
-/* ─── Generic icon+label button ─────────────────────────────────────────── */
+/* ─── Generic Controls ──────────────────────────────────────────────────── */
 .ctrl-btn {
   border-radius: var(--radius-pill);
   color: var(--text-primary);
@@ -59,21 +130,18 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'SF P
   font-size: 13px;
   font-weight: 500;
   padding: 10px 16px;
-  letter-spacing: -0.1px;
-  white-space: nowrap;
-  transition: background 0.15s, transform 0.1s;
   border: 0.5px solid var(--glass-border);
+  transition: background 0.15s, transform 0.1s;
 }
 .ctrl-btn:hover  { background: rgba(60, 60, 60, 0.80); }
 .ctrl-btn:active { transform: scale(0.96); }
 
-/* ─── Zoom pair: two buttons sharing one pill ────────────────────────────── */
 #zoom-wrap {
   display: flex;
   border-radius: var(--radius-pill);
   overflow: hidden;
+  border: 0.5px solid var(--glass-border);
 }
-
 .zoom-btn {
   background: none;
   border: none;
@@ -90,29 +158,17 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'SF P
 }
 .zoom-btn:hover  { background: rgba(255, 255, 255, 0.08); }
 .zoom-btn:active { transform: scale(0.92); }
-
-.zoom-divider {
-  width: 0.5px;
-  background: var(--glass-border);
-  align-self: stretch;
-}
+.zoom-divider { width: 0.5px; background: var(--glass-border); align-self: stretch; }
 
 /* ─── Custom Pin Hover Effects ──────────────────────────────────────────── */
 .custom-pin svg {
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: bottom center;
 }
+.custom-pin:hover svg { transform: scale(1.25); filter: drop-shadow(0px 8px 12px rgba(0,0,0,0.4)); }
+.custom-pin:hover { z-index: 1000 !important; }
 
-.custom-pin:hover svg {
-  transform: scale(1.25);
-  filter: drop-shadow(0px 8px 12px rgba(0,0,0,0.4));
-}
-
-.custom-pin:hover {
-  z-index: 1000 !important; 
-}
-
-/* ─── Leaflet popup: dark frosted glass, no arrow ───────────────────────── */
+/* ─── Leaflet popup: dark frosted glass ─────────────────────────────────── */
 .leaflet-popup-content-wrapper {
   background: var(--glass-bg) !important;
   backdrop-filter: var(--glass-blur) !important;
@@ -122,165 +178,115 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'SF P
   box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
   padding: 0 !important;
 }
-
-.leaflet-popup-content {
-  margin: 12px 16px !important;
-  font-family: inherit !important;
-}
-
-.leaflet-popup-content strong {
-  display: block;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: -0.2px;
-}
-
-.leaflet-popup-content em {
-  font-style: normal;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
+.leaflet-popup-content { margin: 12px 16px !important; font-family: inherit !important; }
+.leaflet-popup-content strong { display: block; font-size: 15px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.2px; }
+.leaflet-popup-content em { font-style: normal; font-size: 12px; color: var(--text-muted); }
 .leaflet-popup-tip-container { display: none; }
 .leaflet-popup-close-button  { display: none !important; }
 
 /* ─── Custom Popup Layouts (Mini & Detailed) ────────────────────────────── */
-.custom-popup-view {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 240px; 
-}
+.custom-popup-view { display: flex; flex-direction: column; gap: 12px; width: 240px; }
+.popup-img-wrapper { position: relative; width: 100%; height: 140px; border-radius: 8px; overflow: hidden; background: #2a2a2a; }
+.popup-img-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* Image Header */
-.popup-img-wrapper {
-  position: relative;
-  width: 100%;
-  height: 140px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #2a2a2a; 
-}
-
-.popup-img-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Gallery Button */
 .popup-gallery-btn {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  border: 0.5px solid var(--glass-border);
-  cursor: pointer;
-  transition: transform 0.1s;
+  position: absolute; top: 8px; left: 8px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; border: 0.5px solid var(--glass-border); cursor: pointer; transition: transform 0.1s;
 }
 .popup-gallery-btn:active { transform: scale(0.92); }
 
-/* Action Buttons */
 .popup-action-btn {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-pill);
-  padding: 10px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  text-align: center;
-  transition: background 0.15s, transform 0.1s;
+  background: var(--accent); color: #fff; border: none; border-radius: var(--radius-pill); padding: 10px 16px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; text-align: center; transition: background 0.15s, transform 0.1s;
 }
 .popup-action-btn:hover { background: #0070e6; }
 .popup-action-btn:active { transform: scale(0.96); }
 
-.popup-action-btn.secondary {
-  background: rgba(255, 255, 255, 0.1);
-  border: 0.5px solid var(--glass-border);
-}
+.popup-action-btn.secondary { background: rgba(255, 255, 255, 0.1); border: 0.5px solid var(--glass-border); }
 .popup-action-btn.secondary:hover { background: rgba(255, 255, 255, 0.15); }
 
-/* Detailed View Specifics */
-.popup-details-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  background: rgba(0,0,0,0.2);
-  padding: 10px;
-  border-radius: 8px;
-}
-.popup-details-grid span {
-  display: block;
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 2px;
-}
-.popup-details-grid p {
-  font-size: 13px;
-  color: var(--text-primary);
-  font-weight: 500;
-}
+.popup-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; }
+.popup-details-grid span { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+.popup-details-grid p { font-size: 13px; color: var(--text-primary); font-weight: 500; }
 
-/* ─── Sliding Project Panel ─────────────────────────────────────────────── */
-#project-panel {
+/* ─── Fullscreen Native Overlay ─────────────────────────────────────────── */
+#overlay-backdrop {
   position: fixed;
-  top: 0;
-  right: 0;
-  width: 100%;
-  max-width: 450px; 
-  height: 100vh;
-  background: var(--map-bg);
-  z-index: 2000;
-  transform: translateX(100%); 
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1); 
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Escurece o mapa ao fundo */
+  z-index: 2999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#project-overlay {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -45%) scale(0.95);
+  width: 90vw;
+  max-width: 1000px;
+  height: 90vh;
+  border-radius: 24px;
+  z-index: 3000;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  border: 0.5px solid var(--glass-border);
   display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-#project-panel.panel-open {
-  transform: translateX(0); 
+/* Classes para ativar o Overlay */
+#overlay-backdrop.visible { opacity: 1; pointer-events: auto; }
+#project-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
 }
 
-#project-frame {
+#close-overlay-btn {
+  position: absolute;
+  top: 20px; right: 20px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  color: white; border: none; font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 10;
+  transition: background 0.2s;
+}
+#close-overlay-btn:hover { background: rgba(0,0,0,0.8); }
+
+#overlay-dynamic-content {
   width: 100%;
   height: 100%;
-  border: none;
-  background: #ffffff; 
-}
-
-#close-panel-btn {
-  position: absolute;
-  top: 24px;
-  left: -60px; 
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+  overflow-y: auto;
+  padding: 0; /* Removemos o padding para a imagem poder colar no topo */
   color: var(--text-primary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s, transform 0.1s;
 }
 
-#close-panel-btn:hover { background: rgba(60, 60, 60, 0.80); }
-#close-panel-btn:active { transform: scale(0.92); }
+/* Estilos internos injetados dinamicamente no Overlay */
+.overlay-hero-img {
+  width: 100%;
+  height: 40vh;
+  min-height: 250px;
+  object-fit: cover;
+}
+.overlay-body {
+  padding: 40px;
+}
+.overlay-body h1 { font-size: 32px; letter-spacing: -1px; margin-bottom: 8px;}
+.overlay-body .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+.overlay-stats {
+  display: flex; gap: 24px; margin-bottom: 32px;
+  background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border);
+}
+.overlay-stats div span { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;}
+.overlay-stats div p { font-size: 20px; font-weight: 600; margin-top: 4px; }
 
-@media (max-width: 600px) {
-  #project-panel { max-width: 100%; }
-  #close-panel-btn {
-    left: 16px;
-    background: rgba(28, 28, 30, 0.90);
-  }
+@media (max-width: 768px) {
+  #project-overlay { width: 100%; height: 100vh; border-radius: 0; max-width: none; }
+  .overlay-body { padding: 24px; }
+  .overlay-stats { flex-direction: column; gap: 16px;}
 }
