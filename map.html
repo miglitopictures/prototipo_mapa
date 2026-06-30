@@ -89,6 +89,25 @@
       <div id="overlay-dynamic-content"></div>
     </div>
 
+    <div id="gallery-backdrop"></div>
+    <div id="gallery-viewer">
+      <div id="gallery-top">
+        <span id="gallery-title"></span>
+        <span id="gallery-counter"></span>
+        <button id="close-gallery-btn" class="glass" title="Fechar">✕</button>
+      </div>
+      <div id="gallery-stage">
+        <button id="gallery-prev" class="gallery-nav-btn glass" title="Anterior">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <img id="gallery-main-img" src="" alt="" />
+        <button id="gallery-next" class="gallery-nav-btn glass" title="Próximo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+      <div id="gallery-thumbs"></div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script>
       /* ── 1. Map setup ─────────────────────────────────────────────────────── */
@@ -138,6 +157,12 @@
           coords: [-22.9836, -43.214],
           preview:
             "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
+          gallery: [
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
+          ],
           content: {
             squareMeter: 450,
             floorPlan: "#",
@@ -153,6 +178,12 @@
           coords: [-22.9749, -43.1917],
           preview:
             "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80",
+          gallery: [
+            "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
+          ],
           content: {
             squareMeter: 820,
             floorPlan: "#",
@@ -168,6 +199,12 @@
           coords: [-22.9829, -43.2084],
           preview:
             "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
+          gallery: [
+            "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?auto=format&fit=crop&w=1200&q=80",
+          ],
           content: {
             squareMeter: 310,
             floorPlan: "#",
@@ -183,6 +220,12 @@
           coords: [-22.9845, -43.2033],
           preview:
             "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=800&q=80",
+          gallery: [
+            "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
+          ],
           content: {
             squareMeter: 1200,
             floorPlan: "#",
@@ -198,6 +241,12 @@
           coords: [-22.9838, -43.2047],
           preview:
             "https://images.unsplash.com/photo-1506526611364-7da61517452e?auto=format&fit=crop&w=800&q=80",
+          gallery: [
+            "https://images.unsplash.com/photo-1506526611364-7da61517452e?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?auto=format&fit=crop&w=1200&q=80",
+          ],
           content: {
             squareMeter: 550,
             floorPlan: "#",
@@ -238,7 +287,7 @@
           .querySelector(".popup-gallery-btn")
           .addEventListener("click", function (e) {
             L.DomEvent.stopPropagation(e);
-            alert("Abrir galeria para: " + project.title);
+            openGallery(project);
           });
 
         // Swap to Detailed View
@@ -392,6 +441,81 @@
         .getElementById("close-overlay-btn")
         .addEventListener("click", closeProjectOverlay);
       overlayBackdrop.addEventListener("click", closeProjectOverlay);
+
+      /* ── 5b. Image Gallery (Lightbox) Logic ───────────────────────────────── */
+      var galleryBackdrop = document.getElementById("gallery-backdrop");
+      var galleryViewer = document.getElementById("gallery-viewer");
+      var galleryMainImg = document.getElementById("gallery-main-img");
+      var galleryTitle = document.getElementById("gallery-title");
+      var galleryCounter = document.getElementById("gallery-counter");
+      var galleryThumbs = document.getElementById("gallery-thumbs");
+
+      var galleryImages = [];
+      var galleryIndex = 0;
+
+      function renderGalleryThumbs() {
+        galleryThumbs.innerHTML = "";
+        galleryImages.forEach(function (src, i) {
+          var thumb = document.createElement("img");
+          thumb.src = src;
+          thumb.className = "gallery-thumb" + (i === galleryIndex ? " active" : "");
+          thumb.addEventListener("click", function () {
+            galleryIndex = i;
+            updateGalleryView();
+          });
+          galleryThumbs.appendChild(thumb);
+        });
+      }
+
+      function updateGalleryView() {
+        galleryMainImg.src = galleryImages[galleryIndex];
+        galleryCounter.textContent =
+          galleryIndex + 1 + " / " + galleryImages.length;
+        var thumbsEls = galleryThumbs.querySelectorAll(".gallery-thumb");
+        thumbsEls.forEach(function (el, i) {
+          el.classList.toggle("active", i === galleryIndex);
+        });
+      }
+
+      function openGallery(project) {
+        galleryImages =
+          project.gallery && project.gallery.length
+            ? project.gallery
+            : [project.preview];
+        galleryIndex = 0;
+        galleryTitle.textContent = project.title;
+        renderGalleryThumbs();
+        updateGalleryView();
+        galleryBackdrop.classList.add("visible");
+        galleryViewer.classList.add("visible");
+      }
+
+      function closeGallery() {
+        galleryBackdrop.classList.remove("visible");
+        galleryViewer.classList.remove("visible");
+      }
+
+      function galleryShowPrev() {
+        galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+        updateGalleryView();
+      }
+
+      function galleryShowNext() {
+        galleryIndex = (galleryIndex + 1) % galleryImages.length;
+        updateGalleryView();
+      }
+
+      document.getElementById("close-gallery-btn").addEventListener("click", closeGallery);
+      document.getElementById("gallery-prev").addEventListener("click", galleryShowPrev);
+      document.getElementById("gallery-next").addEventListener("click", galleryShowNext);
+      galleryBackdrop.addEventListener("click", closeGallery);
+
+      document.addEventListener("keydown", function (e) {
+        if (!galleryViewer.classList.contains("visible")) return;
+        if (e.key === "Escape") closeGallery();
+        if (e.key === "ArrowLeft") galleryShowPrev();
+        if (e.key === "ArrowRight") galleryShowNext();
+      });
 
       /* ── 6. Standard Map Controls ─────────────────────────────────────────── */
       document
